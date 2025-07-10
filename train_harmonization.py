@@ -1,88 +1,93 @@
 #!/usr/bin/env python3
 """
-Training script for RL harmonization system.
+RL Training Script for Harmonization
 
-This script demonstrates how to train harmonization agents using
-different style presets and reward configurations.
+This script trains a reinforcement learning agent for harmonization
+using the fixed environment without note_seq dependencies.
 """
 
 import os
 import sys
 import numpy as np
+import mido
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv
-from stable_baselines3.common.callbacks import EvalCallback
-import note_seq
+from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
+import optuna
+from optuna.samplers import TPESampler
 
 # Add src to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.append('src')
 
-from harmonization.core.coconet_wrapper import CoconetWrapper
 from harmonization.core.rl_environment import HarmonizationEnvironment
 from harmonization.rewards.music_theory_rewards import MusicTheoryRewards
 
-def create_env(checkpoint_path: str, style: str = 'classical'):
+def create_env(melody_sequence=None, style='classical'):
     """
     Create a harmonization environment.
     
     Args:
-        checkpoint_path: Path to Coconet checkpoint
+        melody_sequence: Optional melody sequence to harmonize
         style: Musical style preset
         
     Returns:
         HarmonizationEnvironment
     """
-    # Initialize Coconet wrapper
-    coconet = CoconetWrapper(checkpoint_path)
-    
     # Initialize reward system
-    rewards = MusicTheoryRewards()
-    rewards.set_style_preset(style)
+    reward_system = MusicTheoryRewards()
+    reward_system.set_style_preset(style)
     
     # Create environment
     env = HarmonizationEnvironment(
-        coconet_wrapper=coconet,
-        reward_system=rewards,
+        coconet_wrapper=None,  # Not using Coconet for now
+        reward_system=reward_system,
         max_steps=32,
-        num_voices=4
+        num_voices=3,
+        melody_sequence=melody_sequence
     )
     
     return env
 
 def train_agent(env, 
-                model_name: str,
-                total_timesteps: int = 10000,
-                eval_freq: int = 1000):
+                total_timesteps=100000, 
+                model_path="trained_harmonization_model",
+                log_dir="training_logs"):
     """
-    Train a harmonization agent.
+    Train the RL agent.
     
     Args:
         env: Training environment
-        model_name: Name for saving the model
         total_timesteps: Total training timesteps
-        eval_freq: Evaluation frequency
+        model_path: Path to save the trained model
+        log_dir: Directory for training logs
     """
+    print(f"🚀 Starting RL training for {total_timesteps} timesteps...")
+    
     # Create vectorized environment
     vec_env = DummyVecEnv([lambda: env])
     
     # Create evaluation environment
-    eval_env = DummyVecEnv([lambda: create_env(
-        "../coconet-64layers-128filters", 
-        env.reward_system.weights.get('style', 'classical')
-    )])
+    eval_env = create_env(style='classical')
+    eval_vec_env = DummyVecEnv([lambda: eval_env])
     
-    # Create evaluation callback
+    # Create callbacks
     eval_callback = EvalCallback(
-        eval_env,
-        best_model_save_path=f"./models/{model_name}_best",
-        log_path=f"./logs/{model_name}",
-        eval_freq=eval_freq,
+        eval_vec_env,
+        best_model_save_path=f"{log_dir}/best_model",
+        log_path=log_dir,
+        eval_freq=max(total_timesteps // 10, 1),
         deterministic=True,
         render=False
     )
     
-    # Initialize agent
-    agent = PPO(
+    checkpoint_callback = CheckpointCallback(
+        save_freq=max(total_timesteps // 20, 1),
+        save_path=log_dir,
+        name_prefix="harmonization_model"
+    )
+    
+    # Initialize PPO agent
+    model = PPO(
         "MlpPolicy",
         vec_env,
         verbose=1,
@@ -93,96 +98,232 @@ def train_agent(env,
         gamma=0.99,
         gae_lambda=0.95,
         clip_range=0.2,
-        tensorboard_log=f"./logs/{model_name}"
+        ent_coef=0.01,
+        tensorboard_log=log_dir
     )
     
-    # Train agent
-    print(f"🎵 Training {model_name} agent...")
-    agent.learn(
+    # Train the agent
+    print("🎵 Training harmonization agent...")
+    model.learn(
         total_timesteps=total_timesteps,
-        callback=eval_callback,
+        callback=[eval_callback, checkpoint_callback],
         progress_bar=True
     )
     
-    # Save final model
-    agent.save(f"./models/{model_name}_final")
+    # Save the final model
+    model.save(model_path)
+    print(f"✅ Training complete! Model saved to {model_path}")
     
-    return agent
+    return model
 
-def test_agent(agent, env, num_episodes: int = 5):
+def hyperparameter_optimization(n_trials=50):
     """
-    Test a trained agent.
+    Optimize hyperparameters using Optuna.
     
     Args:
-        agent: Trained agent
-        env: Test environment
-        num_episodes: Number of test episodes
+        n_trials: Number of optimization trials
     """
-    print(f"\n🎼 Testing agent for {num_episodes} episodes...")
+    print(f"🔍 Starting hyperparameter optimization with {n_trials} trials...")
     
-    for episode in range(num_episodes):
+    def objective(trial):
+        # Define hyperparameter search space
+        learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-3, log=True)
+        n_steps = trial.suggest_categorical("n_steps", [1024, 2048, 4096])
+        batch_size = trial.suggest_categorical("batch_size", [32, 64, 128])
+        n_epochs = trial.suggest_int("n_epochs", 5, 15)
+        gamma = trial.suggest_float("gamma", 0.9, 0.999)
+        ent_coef = trial.suggest_float("ent_coef", 0.001, 0.1, log=True)
+        
+        # Create environment
+        env = create_env(style='classical')
+        vec_env = DummyVecEnv([lambda: env])
+        
+        # Create model with trial parameters
+        model = PPO(
+            "MlpPolicy",
+            vec_env,
+            verbose=0,
+            learning_rate=learning_rate,
+            n_steps=n_steps,
+            batch_size=batch_size,
+            n_epochs=n_epochs,
+            gamma=gamma,
+            ent_coef=ent_coef
+        )
+        
+        # Train for a shorter period for optimization
+        model.learn(total_timesteps=10000, progress_bar=False)
+        
+        # Evaluate the model
+        eval_env = create_env(style='classical')
+        eval_vec_env = DummyVecEnv([lambda: eval_env])
+        
+        mean_reward = 0
+        n_eval_episodes = 10
+        
+        for _ in range(n_eval_episodes):
+            obs = eval_vec_env.reset()
+            done = False
+            episode_reward = 0
+            
+            while not done:
+                action, _ = model.predict(obs, deterministic=True)
+                obs, reward, done, _ = eval_vec_env.step(action)
+                episode_reward += reward
+            
+            mean_reward += episode_reward
+        
+        mean_reward /= n_eval_episodes
+        
+        return mean_reward
+    
+    # Create study
+    study = optuna.create_study(
+        direction="maximize",
+        sampler=TPESampler(seed=42)
+    )
+    
+    # Run optimization
+    study.optimize(objective, n_trials=n_trials)
+    
+    print(f"🏆 Best trial: {study.best_trial.value}")
+    print(f"🎯 Best parameters: {study.best_trial.params}")
+    
+    return study.best_trial.params
+
+def test_trained_model(model_path="trained_harmonization_model", 
+                      melody_sequence=None,
+                      output_path="test_harmonization.mid"):
+    """
+    Test a trained model by generating harmonization.
+    
+    Args:
+        model_path: Path to trained model
+        melody_sequence: Melody to harmonize
+        output_path: Output MIDI file path
+    """
+    print(f"🧪 Testing trained model from {model_path}...")
+    
+    try:
+        # Load trained model
+        model = PPO.load(model_path)
+        print("✅ Model loaded successfully")
+        
+        # Create test environment
+        env = create_env(melody_sequence=melody_sequence, style='classical')
+        
+        # Generate harmonization
         obs = env.reset()
-        total_reward = 0
         done = False
+        episode_reward = 0
         
         while not done:
-            action, _ = agent.predict(obs, deterministic=True)
+            action, _ = model.predict(obs, deterministic=True)
             obs, reward, done, info = env.step(action)
-            total_reward += reward
+            episode_reward += reward
         
         # Get final sequence
         final_sequence = env.get_final_sequence()
         
-        print(f"Episode {episode + 1}: Total reward = {total_reward:.2f}")
-        print(f"  Sequence length: {len(final_sequence.notes)} notes")
+        # Save as MIDI
+        save_sequence_as_midi(final_sequence, output_path)
         
-        # Save sequence as MIDI
-        output_path = f"./outputs/{env.reward_system.weights.get('style', 'classical')}_episode_{episode + 1}.mid"
-        note_seq.sequence_proto_to_pretty_midi(final_sequence, output_path)
-        print(f"  Saved to: {output_path}")
+        print(f"🎵 Generated harmonization saved to {output_path}")
+        print(f"📊 Episode reward: {episode_reward:.2f}")
+        
+        return final_sequence
+        
+    except Exception as e:
+        print(f"❌ Error testing model: {e}")
+        return None
+
+def save_sequence_as_midi(sequence, output_path):
+    """
+    Save a sequence as MIDI file.
+    
+    Args:
+        sequence: List of note dictionaries
+        output_path: Output MIDI file path
+    """
+    # Create MIDI file
+    midi = mido.MidiFile()
+    track = mido.MidiTrack()
+    midi.tracks.append(track)
+    
+    # Set tempo
+    track.append(mido.MetaMessage('set_tempo', tempo=mido.bpm2tempo(120)))
+    
+    # Add notes
+    for note in sequence:
+        # Note on
+        track.append(mido.Message('note_on', 
+                                 note=note['pitch'], 
+                                 velocity=note['velocity'], 
+                                 channel=note['voice'], 
+                                 time=0))
+        
+        # Note off
+        duration_ticks = int((note['end_time'] - note['start_time']) * 480)  # 480 ticks per quarter
+        track.append(mido.Message('note_off', 
+                                 note=note['pitch'], 
+                                 velocity=0, 
+                                 channel=note['voice'], 
+                                 time=duration_ticks))
+    
+    # Save file
+    midi.save(output_path)
+
+def load_melody_from_midi(midi_path):
+    """
+    Load melody from MIDI file.
+    
+    Args:
+        midi_path: Path to MIDI file
+        
+    Returns:
+        List of MIDI pitches
+    """
+    try:
+        mid = mido.MidiFile(midi_path)
+        melody_notes = []
+        
+        for track in mid.tracks:
+            for msg in track:
+                if msg.type == 'note_on' and msg.velocity > 0:
+                    melody_notes.append(msg.note)
+        
+        return melody_notes[:32]  # Limit to 32 notes
+        
+    except Exception as e:
+        print(f"❌ Error loading MIDI: {e}")
+        return None
 
 def main():
     """Main training function."""
-    # Create directories
-    os.makedirs("./models", exist_ok=True)
-    os.makedirs("./logs", exist_ok=True)
-    os.makedirs("./outputs", exist_ok=True)
     
-    # Checkpoint path
-    checkpoint_path = "../coconet-64layers-128filters"
+    # Create training directory
+    os.makedirs("training_logs", exist_ok=True)
     
-    # Available styles
-    styles = ['classical', 'jazz', 'pop', 'baroque']
+    # Option 1: Train with random melodies
+    print("🎼 Training with random melodies...")
+    env = create_env(style='classical')
+    model = train_agent(env, total_timesteps=50000)
     
-    print("🎵 RL Harmonization Training")
-    print("=" * 50)
+    # Option 2: Train with specific melody (if available)
+    melody_path = "/Volumes/LaCie/RL_HARMONIZATION/realms2_idea.midi"
+    if os.path.exists(melody_path):
+        print("🎼 Training with custom melody...")
+        melody_sequence = load_melody_from_midi(melody_path)
+        if melody_sequence:
+            env_with_melody = create_env(melody_sequence=melody_sequence, style='classical')
+            model_with_melody = train_agent(env_with_melody, total_timesteps=30000, 
+                                          model_path="trained_harmonization_model_melody")
     
-    for style in styles:
-        print(f"\n🎼 Training {style} style harmonization agent...")
-        
-        # Create environment
-        env = create_env(checkpoint_path, style)
-        
-        # Train agent
-        agent = train_agent(
-            env=env,
-            model_name=f"harmonization_{style}",
-            total_timesteps=5000,  # Reduced for demo
-            eval_freq=500
-        )
-        
-        # Test agent
-        test_env = create_env(checkpoint_path, style)
-        test_agent(agent, test_env, num_episodes=2)
-        
-        # Clean up
-        env.coconet_wrapper.close()
-        test_env.coconet_wrapper.close()
+    # Test the trained model
+    print("🧪 Testing trained model...")
+    test_trained_model(model_path="trained_harmonization_model")
     
-    print("\n✅ Training complete!")
-    print("📁 Check ./models/ for trained agents")
-    print("📁 Check ./outputs/ for generated sequences")
-    print("📁 Check ./logs/ for training logs")
+    print("🎉 Training and testing complete!")
 
 if __name__ == "__main__":
     main() 
