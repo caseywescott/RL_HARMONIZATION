@@ -1,0 +1,7 @@
+tensorflow>=2.13.0
+pretty-midi
+note-seq==0.0.3
+python-multipart
+fastapi
+uvicorn
+requests
