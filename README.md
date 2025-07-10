@@ -1,239 +1,309 @@
-# RL Tuner Dockerfile Project
+# 🎵 N-Part Harmonization with Reinforcement Learning
 
-This repository contains two different Docker environments for music generation and machine learning, each optimized for different use cases and architectures.
+An AI system that generates harmonically coherent multi-part compositions using Coconet and reinforcement learning with tunable music theory rewards.
 
-## Project Structure
+## 🎯 Project Overview
 
-```
-rl_tuner_dockerfile_check/
-├── README.md                           # This file - main project documentation
-├── development-jupyter.Dockerfile      # Development environment (Jupyter + Magenta)
-└── coconet-server/
-    ├── README.md                      # Coconet server specific documentation
-    ├── production-arm64.Dockerfile    # Production server (FastAPI + ARM64)
-    ├── requirements.txt               # Python dependencies
-    └── server.py                      # FastAPI application
-```
+This project extends the work from ["Tuning Recurrent Networks with Reinforcement Learning"](https://magenta.withgoogle.com/2016/11/09/tuning-recurrent-networks-with-reinforcement-learning) to create an n-part automatic harmonization system. Instead of generating single melodies, this system creates complete harmonizations (typically 2-4 parts) by learning to balance various musical rules through reward-based learning.
 
-## Quick Start Guide
+### Key Features
 
-### For Apple Silicon Macs (M1/M2/M3) - **RECOMMENDED**
+- **🎼 Multi-Part Harmonization**: Generate 2-4 part harmonies from melodies or chord progressions
+- **🎛️ Tunable Rewards**: Adjust music theory rule weights for different styles (classical, jazz, pop, baroque)
+- **🤖 RL Framework**: Uses Stable-Baselines3 with PPO for training
+- **🎯 Coconet Integration**: Built on top of the pre-trained Coconet model
+- **📊 Style Presets**: Pre-configured reward weights for different musical styles
 
-```bash
-cd coconet-server
-docker build -f production-arm64.Dockerfile -t coconet-server .
-docker run -p 8000:8000 coconet-server
-```
+## 🚀 Quick Start
 
-### For x86_64 Development
+### Installation
 
 ```bash
-docker build -f development-jupyter.Dockerfile -t rl-tuner-dev .
-docker run -p 8888:8888 rl-tuner-dev
+# Clone the repository
+git clone <repository-url>
+cd RL_HARMONIZATION
+
+# Install dependencies
+make install
+
+# Or manually:
+pip3 install -r requirements.txt
 ```
 
-## Dockerfile Comparison
+### Basic Usage
 
-### 1. Development Environment (`development-jupyter.Dockerfile`)
+```python
+from src.harmonization import HarmonizationEnvironment, MusicTheoryRewards, CoconetWrapper
 
-**Purpose**: Jupyter notebook environment for research and experimentation
+# Create components
+coconet = CoconetWrapper("coconet-64layers-128filters")
+rewards = MusicTheoryRewards()
+rewards.set_style_preset('classical')  # or 'jazz', 'pop', 'baroque'
 
-**Key Characteristics:**
+# Create environment
+env = HarmonizationEnvironment(
+    coconet_wrapper=coconet,
+    reward_system=rewards,
+    max_steps=32,
+    num_voices=4
+)
 
-- **Architecture**: x86_64 (Intel/AMD)
-- **Base Image**: `python:3.7.9-buster`
-- **TensorFlow**: 2.5.0 (older, stable version)
-- **Includes**: Magenta 2.1.4, Jupyter Notebook
-- **Port**: 8888 (Jupyter interface)
-- **Use Case**: Development, research, experimentation
+# Train an agent
+from stable_baselines3 import PPO
+agent = PPO("MlpPolicy", env, verbose=1)
+agent.learn(total_timesteps=10000)
 
-**Best For:**
+# Generate harmonization
+obs = env.reset()
+for step in range(32):
+    action, _ = agent.predict(obs, deterministic=True)
+    obs, reward, done, info = env.step(action)
+    if done:
+        break
 
-- Researchers and developers who need interactive notebooks
-- Experimentation with Magenta models
-- Development work on x86_64 systems
-- Educational purposes
+# Get final sequence
+final_sequence = env.get_final_sequence()
+```
 
-**Build Command:**
+### Training Different Styles
+
+```python
+# Train classical style
+rewards.set_style_preset('classical')
+env = HarmonizationEnvironment(coconet, rewards)
+agent = PPO("MlpPolicy", env)
+agent.learn(total_timesteps=10000)
+
+# Train jazz style
+rewards.set_style_preset('jazz')
+env = HarmonizationEnvironment(coconet, rewards)
+agent = PPO("MlpPolicy", env)
+agent.learn(total_timesteps=10000)
+```
+
+## 📁 Project Structure
+
+```
+RL_HARMONIZATION/
+├── src/harmonization/           # Main package
+│   ├── core/                   # Core components
+│   │   ├── coconet_wrapper.py  # Coconet model integration
+│   │   └── rl_environment.py   # RL environment
+│   ├── rewards/                # Reward functions
+│   │   └── music_theory_rewards.py  # Tunable music theory rewards
+│   └── evaluation/             # Evaluation metrics
+├── coconet-64layers-128filters/ # Pre-trained Coconet model
+├── train_harmonization.py      # Training script
+├── test_implementation.py      # Test script
+├── requirements.txt            # Dependencies
+├── Makefile                    # Development tasks
+└── README.md                   # This file
+```
+
+## 🎼 Music Theory Rewards
+
+The system implements 21 different music theory reward functions, each with adjustable weights:
+
+### Core Rewards
+
+- **Avoid Repetition**: Penalizes immediate repetition of pitches/patterns
+- **Prefer Arpeggios**: Rewards chord arpeggio patterns
+- **Prefer Scale Degrees**: Rewards diatonic scale usage
+- **Prefer Tonic**: Rewards emphasis on tonic notes
+- **Prefer Leading Tone**: Rewards leading tone resolution
+
+### Harmonic Rewards
+
+- **Prefer Resolution**: Rewards dissonance-to-consonance resolution
+- **Prefer Common Chords**: Rewards common chord types (triads, sevenths)
+- **Prefer Common Progressions**: Rewards common chord progressions
+- **Prefer Voice Leading**: Rewards smooth voice leading
+- **Prefer Harmony**: Combined harmonic coherence
+
+### Rhythmic Rewards
+
+- **Prefer Strong Beats**: Rewards emphasis on strong beats
+- **Prefer Weak Beats**: Rewards appropriate weak beat treatment
+- **Prefer Common Rhythms**: Rewards common rhythmic patterns
+- **Prefer Common Durations**: Rewards common note values
+
+### Style Rewards
+
+- **Prefer Common Pitches**: Rewards commonly used pitches
+- **Prefer Common Intervals**: Rewards common melodic intervals
+- **Prefer Counterpoint**: Rewards good counterpoint rules
+- **Prefer Form**: Rewards formal coherence
+- **Prefer Style**: Combined style consistency
+
+## 🎛️ Style Presets
+
+### Classical
+
+- Emphasizes: Common chords, progressions, voice leading, harmony, counterpoint
+- Weights: Balanced approach to traditional harmony
+
+### Jazz
+
+- Emphasizes: Arpeggios, common pitches, intervals, chords, progressions
+- Weights: Focus on chord-based improvisation
+
+### Pop
+
+- Emphasizes: Common pitches, chords, progressions, rhythms
+- Weights: Simple, accessible harmony
+
+### Baroque
+
+- Emphasizes: Counterpoint, voice leading, harmony, form
+- Weights: Complex polyphonic textures
+
+## 🛠️ Development
+
+### Running Tests
 
 ```bash
-docker build -f development-jupyter.Dockerfile -t rl-tuner-dev .
+make test
+# or
+python3 test_implementation.py
 ```
 
-**Run Command:**
+### Training Agents
 
 ```bash
-docker run -p 8888:8888 rl-tuner-dev
+make train
+# or
+python3 train_harmonization.py
 ```
 
-### 2. Production Server (`coconet-server/production-arm64.Dockerfile`)
-
-**Purpose**: Production-ready FastAPI server for music generation
-
-**Key Characteristics:**
-
-- **Architecture**: ARM64 (Apple Silicon optimized)
-- **Base Image**: `python:3.8-slim` with ARM64 platform
-- **TensorFlow**: Latest ARM64-compatible version
-- **Includes**: FastAPI, uvicorn, modern dependencies
-- **Port**: 8000 (API server)
-- **Use Case**: Production deployment, API services
-
-**Best For:**
-
-- Production deployments
-- Apple Silicon Macs (M1, M2, M3)
-- ARM64 cloud instances
-- API-based music generation services
-
-**Build Command:**
+### Code Quality
 
 ```bash
-cd coconet-server
-docker build -f production-arm64.Dockerfile -t coconet-server .
+make lint      # Run linting
+make format    # Format code
+make clean     # Clean generated files
 ```
 
-**Run Command:**
+### Full Setup
 
 ```bash
-docker run -p 8000:8000 coconet-server
+make setup     # Install, format, lint, and test
 ```
 
-## Architecture Compatibility
+## 📊 Customizing Rewards
 
-| Dockerfile                       | x86_64 | ARM64 | Apple Silicon |
-| -------------------------------- | ------ | ----- | ------------- |
-| `development-jupyter.Dockerfile` | ✅     | ❌    | ❌            |
-| `production-arm64.Dockerfile`    | ❌     | ✅    | ✅            |
+### Setting Custom Weights
 
-## Use Case Decision Guide
+```python
+rewards = MusicTheoryRewards()
 
-### Choose `development-jupyter.Dockerfile` if:
+# Set custom weights
+custom_weights = {
+    'prefer_common_chords': 0.5,
+    'prefer_arpeggios': 0.3,
+    'prefer_voice_leading': 0.2
+}
+rewards.set_custom_weights(custom_weights)
+```
 
-- You need Jupyter notebooks for development
-- You're working on an Intel/AMD system
-- You need Magenta library access
-- You're doing research or experimentation
-- You want an interactive development environment
+### Creating New Style Presets
 
-### Choose `production-arm64.Dockerfile` if:
+```python
+# Add to style_presets in MusicTheoryRewards
+self.style_presets['romantic'] = {
+    'prefer_common_chords': 0.3,
+    'prefer_arpeggios': 0.4,
+    'prefer_common_intervals': 0.3
+}
+```
 
-- You're using an Apple Silicon Mac (M1/M2/M3)
-- You need a production API server
-- You want modern TensorFlow versions
-- You're deploying to ARM64 cloud instances
-- You need FastAPI-based services
+## 🎯 Advanced Usage
 
-## Migration Paths
+### Multi-Style Training
 
-### From Development to Production:
+```python
+# Train multiple styles and compare
+styles = ['classical', 'jazz', 'pop', 'baroque']
+agents = {}
 
-1. Develop using the development Dockerfile (Jupyter environment)
-2. Test your models and algorithms
-3. Deploy using the production Dockerfile (FastAPI)
+for style in styles:
+    rewards.set_style_preset(style)
+    env = HarmonizationEnvironment(coconet, rewards)
+    agent = PPO("MlpPolicy", env)
+    agent.learn(total_timesteps=10000)
+    agents[style] = agent
+```
 
-### From x86_64 to ARM64:
+### Real-Time Harmonization
 
-- Use the production Dockerfile for ARM64 compatibility
-- Consider updating the development Dockerfile to ARM64 if you need Jupyter on Apple Silicon
+```python
+# Generate harmonization in real-time
+def harmonize_melody(melody_sequence, style='classical'):
+    rewards.set_style_preset(style)
+    env = HarmonizationEnvironment(coconet, rewards)
 
-## Performance Considerations
+    # Set melody as primer
+    env.current_sequence = melody_sequence
 
-### Development Environment:
+    # Generate harmonization
+    obs = env._get_observation()
+    for step in range(32):
+        action, _ = agent.predict(obs, deterministic=True)
+        obs, reward, done, info = env.step(action)
+        if done:
+            break
 
-- **Build Time**: ~5-10 minutes
-- **Image Size**: ~3-4GB
-- **Memory Usage**: Moderate (Jupyter + TensorFlow)
-- **Best For**: Interactive development
+    return env.get_final_sequence()
+```
 
-### Production Server:
+## 📈 Evaluation Metrics
 
-- **Build Time**: ~5-10 minutes
-- **Image Size**: ~2-3GB
-- **Memory Usage**: Optimized for production
-- **Best For**: High-performance API serving
+The system tracks various metrics during training:
 
-## Security Considerations
+- **Total Reward**: Sum of all rewards in episode
+- **Average Reward**: Mean reward per step
+- **Style Consistency**: How well the output matches the target style
+- **Harmonic Coherence**: Quality of harmonic structure
+- **Voice Leading**: Smoothness of voice movements
 
-### Development Environment:
+## 🔧 Configuration
 
-- Runs Jupyter with root access
-- Exposed notebook interface
-- Suitable for development only
+### Environment Parameters
 
-### Production Server:
+- `max_steps`: Maximum steps per episode (default: 32)
+- `num_voices`: Number of voices in harmonization (default: 4)
+- `temperature`: Sampling temperature for Coconet (default: 1.0)
 
-- FastAPI with proper request handling
-- Better security practices
-- Suitable for production deployment
+### Training Parameters
 
-## Troubleshooting
+- `total_timesteps`: Total training steps (default: 10000)
+- `learning_rate`: PPO learning rate (default: 3e-4)
+- `batch_size`: Training batch size (default: 64)
 
-### Common Issues:
+## 🤝 Contributing
 
-1. **Architecture Mismatch**
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Run `make test` to ensure everything works
+6. Submit a pull request
 
-   - **Error**: "exec /bin/sh: exec format error"
-   - **Solution**: Use the correct Dockerfile for your architecture
+## 📚 References
 
-2. **Port Conflicts**
+- [Tuning Recurrent Networks with Reinforcement Learning](https://magenta.withgoogle.com/2016/11/09/tuning-recurrent-networks-with-reinforcement-learning)
+- [Coconet: A Neural Network for Music Generation](https://arxiv.org/abs/1703.10847)
+- [Stable-Baselines3 Documentation](https://stable-baselines3.readthedocs.io/)
 
-   - **Error**: "port already in use"
-   - **Solution**: Use different port mappings or stop conflicting services
+## 📄 License
 
-3. **Memory Issues**
-   - **Error**: Build fails or container crashes
-   - **Solution**: Increase Docker memory limits (8GB+ recommended)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-### Platform-Specific Issues:
+## 🙏 Acknowledgments
 
-**Apple Silicon (M1/M2/M3):**
+- Google Magenta team for the original RL Tuner work
+- The Coconet research team
+- The Stable-Baselines3 community
 
-- Always use the `production-arm64.Dockerfile`
-- Ensure Docker Desktop is configured for ARM64
-- May need to increase memory limits
+---
 
-**Intel/AMD Systems:**
-
-- Use the `development-jupyter.Dockerfile` for development
-- Consider the production Dockerfile for production (if ARM64 compatible)
-
-## Future Improvements
-
-1. **Unified Multi-Architecture Support**
-
-   - Create a single Dockerfile that works on both architectures
-   - Use multi-stage builds for optimization
-
-2. **Enhanced Security**
-
-   - Non-root user execution
-   - Proper secrets management
-   - SSL/TLS support
-
-3. **Performance Optimization**
-   - GPU support for both architectures
-   - TensorFlow Serving integration
-   - Caching optimizations
-
-## Contributing
-
-When contributing to this project:
-
-1. **Test on Both Architectures**: Ensure compatibility with both x86_64 and ARM64
-2. **Update Documentation**: Keep this README and individual Dockerfile documentation current
-3. **Version Compatibility**: Test with different TensorFlow and dependency versions
-4. **Performance Testing**: Benchmark changes on target architectures
-
-## Support
-
-For issues and questions:
-
-1. **Check Architecture**: Ensure you're using the correct Dockerfile for your system
-2. **Review Documentation**: Check the specific README files in each directory
-3. **Troubleshooting**: See the troubleshooting sections in individual README files
-4. **Open Issues**: Create detailed issue reports with your system specifications
-
-## License
-
-[Add your license information here]
+**🎵 Happy Harmonizing!**

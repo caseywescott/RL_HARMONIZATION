@@ -24,6 +24,7 @@ This project aims to extend the work from "Tuning Recurrent Networks with Reinfo
    - Bach Doodle algorithm implementation
    - Uses convolutional networks for counterpoint generation
    - Available at: g.co/magenta/coconet
+   - **Selected as our base model** for its superior harmony generation capabilities
 
 4. **Previous RL Counterpoint Project**
    - Successfully used RL to reward models for following counterpoint rules
@@ -34,26 +35,29 @@ This project aims to extend the work from "Tuning Recurrent Networks with Reinfo
 
 The key insight is that **reinforcement learning allows the model to learn to blend musical rules together in clever ways without being forced to follow all rules simultaneously**. The rules are enforced through reward signals rather than hard constraints, enabling more natural and musically satisfying outputs.
 
+**Our Approach**: We will wrap the pre-trained Coconet model in an RL environment, allowing us to leverage its sophisticated harmony generation while adding tunable music theory rewards.
+
 ## Technical Approach
 
 ### 1. Model Architecture
 
-**Base Model:**
+**Base Model: Coconet (Counterpoint by Convolution)**
 
-- Recurrent Neural Network (RNN) or Transformer-based architecture
-- Multi-track output for n-part harmonization
-- Each part (voice) generated simultaneously with awareness of other parts
+- **Architecture**: 64-layer CNN with 128 filters
+- **Training Data**: JSB Chorales (Bach 4-part harmony)
+- **Output**: 4-part polyphonic harmony
+- **Advantages**: Pre-trained on high-quality classical harmony, modern CNN architecture
 
 **Architecture Components:**
 
 ```
 Input: Melody line or chord progression
 ↓
-Encoder: Process input musical features
+Coconet Encoder: Process input musical features
 ↓
-Decoder: Generate n-part harmonization
+Coconet Decoder: Generate 4-part harmonization
 ↓
-RL Agent: Evaluate and reward outputs
+RL Agent: Evaluate and reward outputs with tunable weights
 ↓
 Output: Harmonized n-part composition
 ```
@@ -65,51 +69,52 @@ Output: Harmonized n-part composition
 - Current musical context (recent notes, harmonic context)
 - Generated notes for each part so far
 - Musical features (key, time signature, etc.)
+- Coconet's internal representation
 
 **Action Space:**
 
-- Note selection for each part
+- Note selection for each part (from Coconet's output distribution)
 - Duration and articulation choices
 - Harmonic progression decisions
 
 **Reward Function:**
 Based on the metrics from Figure 2 of your paper, the reward function should evaluate:
 
-1. **Harmonic Coherence**
+1. **Harmonic Coherence** (Tunable Weight: 0.2-0.4)
 
    - Chord quality and progression
    - Voice leading smoothness
    - Harmonic tension and resolution
 
-2. **Counterpoint Rules**
+2. **Counterpoint Rules** (Tunable Weight: 0.1-0.3)
 
    - Parallel motion avoidance
    - Proper voice spacing
    - Harmonic leaps management
 
-3. **Musical Quality**
+3. **Musical Interest** (Tunable Weight: 0.2-0.4)
 
    - Melodic interest in each part
    - Rhythmic variety
    - Overall musical flow
 
-4. **Style Consistency**
+4. **Style Consistency** (Tunable Weight: 0.1-0.3)
    - Adherence to target musical style
    - Historical accuracy (if applicable)
    - Genre-specific characteristics
 
 ### 3. Training Methodology
 
-**Phase 1: Pre-training**
+**Phase 1: Coconet Integration**
 
-- Supervised learning on existing harmonization datasets
-- Learn basic musical patterns and relationships
-- Establish foundation for RL fine-tuning
+- Load pre-trained Coconet model (64 layers, 128 filters)
+- Create RL wrapper around Coconet
+- Implement basic reward function
 
 **Phase 2: RL Fine-tuning**
 
-- Use pre-trained model as starting point
-- Apply RL with reward function based on Figure 2 metrics
+- Use Coconet as starting point
+- Apply RL with tunable reward function
 - Gradually improve rule blending and musical quality
 
 **Phase 3: Style Adaptation**
@@ -118,54 +123,79 @@ Based on the metrics from Figure 2 of your paper, the reward function should eva
 - Adapt reward weights for different aesthetic preferences
 - Generate style-specific harmonizations
 
-### 4. Reward Function Design
+### 4. Tunable Reward Function Design
 
-The reward function should be a weighted combination of multiple musical metrics:
+The reward function is a weighted combination of multiple musical metrics with adjustable weights:
 
 ```python
-def calculate_reward(harmonization, target_style):
+def calculate_harmony_reward(harmony_context, next_chord, weights):
     reward = 0.0
 
-    # Harmonic coherence (30% weight)
-    reward += 0.3 * harmonic_coherence_score(harmonization)
+    # Harmonic coherence (staying in key)
+    reward += weights['harmonic_coherence'] * check_harmonic_coherence(next_chord)
 
-    # Voice leading quality (25% weight)
-    reward += 0.25 * voice_leading_score(harmonization)
+    # Voice leading (smooth transitions)
+    reward += weights['voice_leading'] * check_voice_leading(harmony_context, next_chord)
 
-    # Counterpoint adherence (20% weight)
-    reward += 0.2 * counterpoint_score(harmonization)
+    # Counterpoint rules
+    reward += weights['counterpoint'] * check_counterpoint_rules(harmony_context, next_chord)
 
-    # Musical interest (15% weight)
-    reward += 0.15 * musical_interest_score(harmonization)
+    # Musical interest (avoiding repetition)
+    reward += weights['musical_interest'] * check_musical_interest(harmony_context, next_chord)
 
-    # Style consistency (10% weight)
-    reward += 0.1 * style_consistency_score(harmonization, target_style)
+    # Style consistency
+    reward += weights['style_consistency'] * check_style_consistency(next_chord)
 
     return reward
+
+# Predefined style presets
+STYLE_PRESETS = {
+    'classical': {
+        'harmonic_coherence': 0.3,
+        'voice_leading': 0.25,
+        'counterpoint': 0.25,
+        'musical_interest': 0.1,
+        'style_consistency': 0.1
+    },
+    'jazz': {
+        'harmonic_coherence': 0.2,
+        'voice_leading': 0.15,
+        'counterpoint': 0.1,
+        'musical_interest': 0.35,
+        'style_consistency': 0.2
+    },
+    'pop': {
+        'harmonic_coherence': 0.4,
+        'voice_leading': 0.1,
+        'counterpoint': 0.05,
+        'musical_interest': 0.25,
+        'style_consistency': 0.2
+    }
+}
 ```
 
 ## Implementation Plan
 
 ### Phase 1: Foundation (Weeks 1-4)
 
-1. **Data Preparation**
+1. **Coconet Integration**
 
+   - Set up Coconet model with pre-trained weights
+   - Create RL environment wrapper
+   - Implement basic reward function
+
+2. **Data Preparation**
    - Collect n-part harmonization datasets
    - Preprocess musical data for training
    - Create evaluation metrics based on Figure 2
 
-2. **Model Development**
-   - Implement base RNN/Transformer architecture
-   - Design multi-track output mechanism
-   - Create musical feature extraction pipeline
-
 ### Phase 2: RL Integration (Weeks 5-8)
 
-1. **Reward Function Implementation**
+1. **Tunable Reward Function Implementation**
 
    - Implement metrics from Figure 2
-   - Create weighted reward system
-   - Design adaptive reward mechanisms
+   - Create weighted reward system with adjustable weights
+   - Design style presets (classical, jazz, pop)
 
 2. **RL Training Pipeline**
    - Integrate with existing RL frameworks (e.g., Stable Baselines3)
@@ -176,7 +206,7 @@ def calculate_reward(harmonization, target_style):
 
 1. **Hyperparameter Tuning**
 
-   - Optimize reward weights
+   - Optimize reward weights for different styles
    - Fine-tune model architecture
    - Balance exploration vs. exploitation
 
@@ -192,6 +222,7 @@ def calculate_reward(harmonization, target_style):
 3. **Style Adaptation**: Easy adaptation to different musical styles and preferences
 4. **Quality Improvement**: Better musical outputs through reward-based learning
 5. **Scalability**: Framework can be extended to other musical tasks
+6. **High-Quality Base**: Coconet's pre-trained harmony knowledge provides excellent foundation
 
 ## Technical Challenges and Solutions
 
@@ -199,36 +230,10 @@ def calculate_reward(harmonization, target_style):
 
 **Solution**: Start with simple metrics and gradually increase complexity. Use expert feedback to validate reward function effectiveness.
 
-### Challenge 2: Training Stability
+### Challenge 2: Coconet-RL Integration
 
-**Solution**: Use curriculum learning, starting with simpler harmonization tasks and gradually increasing difficulty.
+**Solution**: Create wrapper that preserves Coconet's sophisticated harmony generation while adding RL-based optimization.
 
-### Challenge 3: Evaluation Metrics
+### Challenge 3: Tunable Weights
 
-**Solution**: Combine automated metrics with human evaluation. Create a diverse panel of musical experts for validation.
-
-### Challenge 4: Computational Resources
-
-**Solution**: Use efficient RL algorithms (PPO, A2C) and consider distributed training for large-scale experiments.
-
-## Success Metrics
-
-1. **Musical Quality**: Expert evaluation scores
-2. **Rule Adherence**: Automated metric scores from Figure 2
-3. **Style Consistency**: Ability to generate in different musical styles
-4. **Computational Efficiency**: Training time and resource usage
-5. **User Satisfaction**: Feedback from musicians and composers
-
-## Future Extensions
-
-1. **Real-time Harmonization**: Generate harmonizations in real-time during performance
-2. **Interactive Composition**: Allow user feedback to guide harmonization
-3. **Multi-style Fusion**: Combine elements from different musical traditions
-4. **Educational Applications**: Use for teaching music theory and composition
-5. **Collaborative Composition**: Enable human-AI collaborative harmonization
-
-## Conclusion
-
-This project represents a significant advancement in AI-assisted music composition by combining the strengths of deep learning with the flexibility of reinforcement learning. By using reward-based learning to balance musical rules, the system can generate more natural and musically satisfying n-part harmonizations while maintaining the theoretical foundation established in your paper.
-
-The key innovation lies in the intelligent blending of rules through RL, allowing the model to learn sophisticated musical relationships that would be difficult to encode explicitly. This approach has the potential to revolutionize how we think about AI-assisted composition and could lead to new tools for musicians, composers, and music educators.
+**Solution**: Implement style presets and allow real-time weight adjustment for different musical preferences.
