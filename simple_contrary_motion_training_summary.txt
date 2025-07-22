@@ -1,9 +1,0 @@
-SIMPLE CONTRARY MOTION TRAINING SUMMARY
-========================================
-Training date: 2025-07-10 21:17:13
-Episodes: 10000
-Final average reward: 11.351
-Best episode reward: 17.000
-Reward function: Simple music theory + Contrary motion
-Training melody: C major scale (8 notes)
-Max steps per episode: 8
