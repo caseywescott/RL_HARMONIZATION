@@ -1,0 +1,33 @@
+{
+  "test_date": "2025-07-15T14:04:17.949891",
+  "melody_file": "/Volumes/LaCie/RL_HARMONIZATION/realms2_idea.midi",
+  "melody_notes": 19,
+  "results": {
+    "Hybrid Coconet + RL Rules": {
+      "harmonic_coherence": 0.0,
+      "voice_leading": 0.6109589041095892,
+      "contrary_motion": 0.20000000000000007,
+      "overall_score": 0.26383561643835624
+    },
+    "Coconet Only": {
+      "harmonic_coherence": 0.0,
+      "voice_leading": 0.9173913043478257,
+      "contrary_motion": 0.20000000000000007,
+      "overall_score": 0.37108695652173895
+    },
+    "RL Rules Only": {
+      "harmonic_coherence": 0.0,
+      "voice_leading": 0.9333333333333336,
+      "contrary_motion": 0.20000000000000007,
+      "overall_score": 0.3766666666666667
+    },
+    "Simple Contrary Motion": {
+      "harmonic_coherence": 0.0,
+      "voice_leading": 0.8391304347826083,
+      "contrary_motion": 0.20000000000000007,
+      "overall_score": 0.34369565217391285
+    }
+  },
+  "best_method": "RL Rules Only",
+  "best_score": 0.3766666666666667
+}

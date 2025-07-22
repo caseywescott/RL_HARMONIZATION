@@ -1,0 +1,210 @@
+MULTIPLE HARMONIZATION VERSIONS SUMMARY
+==================================================
+Generated: 2025-07-10 21:38:22
+Source melody: /Volumes/LaCie/RL_HARMONIZATION/realms2_idea.midi
+Number of versions: 20
+Model: Simple_Contrary_Motion_Model
+Episodes trained: 10000
+
+VERSION DETAILS:
+------------------------------
+Version 01:
+  File: multiple_harmonizations/harmonization_v01.mid
+  Total reward: 86.500
+  Avg reward: 4.553
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-64
+    Tenor: 40-59
+    Bass: 33-54
+
+Version 02:
+  File: multiple_harmonizations/harmonization_v02.mid
+  Total reward: 92.000
+  Avg reward: 4.842
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 40-59
+    Bass: 33-52
+
+Version 03:
+  File: multiple_harmonizations/harmonization_v03.mid
+  Total reward: 94.000
+  Avg reward: 4.947
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-69
+    Tenor: 40-57
+    Bass: 31-52
+
+Version 04:
+  File: multiple_harmonizations/harmonization_v04.mid
+  Total reward: 89.000
+  Avg reward: 4.684
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-69
+    Tenor: 40-59
+    Bass: 31-54
+
+Version 05:
+  File: multiple_harmonizations/harmonization_v05.mid
+  Total reward: 88.500
+  Avg reward: 4.658
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 42-59
+    Bass: 33-54
+
+Version 06:
+  File: multiple_harmonizations/harmonization_v06.mid
+  Total reward: 93.500
+  Avg reward: 4.921
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 40-59
+    Bass: 29-54
+
+Version 07:
+  File: multiple_harmonizations/harmonization_v07.mid
+  Total reward: 76.500
+  Avg reward: 4.026
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-67
+    Tenor: 42-59
+    Bass: 35-50
+
+Version 08:
+  File: multiple_harmonizations/harmonization_v08.mid
+  Total reward: 101.500
+  Avg reward: 5.342
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 38-57
+    Bass: 31-54
+
+Version 09:
+  File: multiple_harmonizations/harmonization_v09.mid
+  Total reward: 88.500
+  Avg reward: 4.658
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-64
+    Tenor: 44-57
+    Bass: 33-54
+
+Version 10:
+  File: multiple_harmonizations/harmonization_v10.mid
+  Total reward: 88.000
+  Avg reward: 4.632
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 52-64
+    Tenor: 40-57
+    Bass: 29-54
+
+Version 11:
+  File: multiple_harmonizations/harmonization_v11.mid
+  Total reward: 90.500
+  Avg reward: 4.763
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 44-57
+    Bass: 29-54
+
+Version 12:
+  File: multiple_harmonizations/harmonization_v12.mid
+  Total reward: 92.000
+  Avg reward: 4.842
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 52-67
+    Tenor: 40-59
+    Bass: 29-54
+
+Version 13:
+  File: multiple_harmonizations/harmonization_v13.mid
+  Total reward: 96.000
+  Avg reward: 5.053
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-67
+    Tenor: 42-57
+    Bass: 35-52
+
+Version 14:
+  File: multiple_harmonizations/harmonization_v14.mid
+  Total reward: 98.500
+  Avg reward: 5.184
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 40-57
+    Bass: 33-52
+
+Version 15:
+  File: multiple_harmonizations/harmonization_v15.mid
+  Total reward: 82.000
+  Avg reward: 4.316
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 52-71
+    Tenor: 45-59
+    Bass: 33-54
+
+Version 16:
+  File: multiple_harmonizations/harmonization_v16.mid
+  Total reward: 91.000
+  Avg reward: 4.789
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-67
+    Tenor: 44-59
+    Bass: 33-52
+
+Version 17:
+  File: multiple_harmonizations/harmonization_v17.mid
+  Total reward: 95.500
+  Avg reward: 5.026
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-66
+    Tenor: 40-57
+    Bass: 34-54
+
+Version 18:
+  File: multiple_harmonizations/harmonization_v18.mid
+  Total reward: 91.500
+  Avg reward: 4.816
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 52-67
+    Tenor: 40-59
+    Bass: 31-52
+
+Version 19:
+  File: multiple_harmonizations/harmonization_v19.mid
+  Total reward: 92.500
+  Avg reward: 4.868
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 38-59
+    Bass: 31-54
+
+Version 20:
+  File: multiple_harmonizations/harmonization_v20.mid
+  Total reward: 95.500
+  Avg reward: 5.026
+  Voice ranges:
+    Soprano: 57-66
+    Alto: 50-71
+    Tenor: 38-57
+    Bass: 35-50
+

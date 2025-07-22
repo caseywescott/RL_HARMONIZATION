@@ -1,0 +1,1 @@
+{"error":"Coconet script failed: Traceback (most recent call last):\n  File \"/app/magenta_coconet/coconet_sample.py\", line 21, in <module>\n    from magenta.models.coconet import lib_graph\nModuleNotFoundError: No module named 'magenta'\n"}
