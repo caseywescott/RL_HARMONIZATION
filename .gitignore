@@ -11,10 +11,10 @@ saved_models/*.json
 saved_models/*.npy
 saved_models/*.png
 
-# MIDI output files
+# MIDI output files (now organized in midi_files folder)
+# Keep only essential MIDI files, exclude generated outputs
 *.mid
-multiple_harmonizations/*.mid
-examples/output/*.mid
+!midi_files/*.mid
 
 # Python cache
 __pycache__/
