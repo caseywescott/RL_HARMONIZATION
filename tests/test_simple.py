@@ -10,7 +10,7 @@ import sys
 import numpy as np
 
 # Add src to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 def test_reward_system():
     """Test the music theory reward system."""

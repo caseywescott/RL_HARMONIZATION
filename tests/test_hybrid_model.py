@@ -14,7 +14,7 @@ from datetime import datetime
 import sys
 
 # Add src to path
-sys.path.append('src')
+sys.path.append('../src')
 
 def load_melody_from_midi(midi_file):
     """Load melody notes from MIDI file"""

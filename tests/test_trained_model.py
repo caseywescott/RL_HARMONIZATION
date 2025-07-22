@@ -10,7 +10,7 @@ import os
 import sys
 
 # Add src to path for imports
-sys.path.append('src')
+sys.path.append('../src')
 
 from harmonization.core.rl_environment import RLHarmonizationEnv
 from harmonization.rewards.music_theory_rewards import MusicTheoryRewards

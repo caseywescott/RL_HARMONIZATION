@@ -4,7 +4,7 @@ Simple test to check if training components work
 """
 
 import sys
-sys.path.append('src')
+sys.path.append('../src')
 
 try:
     from harmonization.core.rl_environment import RLHarmonizationEnv

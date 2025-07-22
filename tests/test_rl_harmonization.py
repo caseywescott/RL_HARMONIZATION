@@ -13,7 +13,7 @@ import numpy as np
 import pretty_midi
 
 # Add src to path
-sys.path.append('src')
+sys.path.append('../src')
 
 def test_rl_model():
     """Test the trained RL model"""

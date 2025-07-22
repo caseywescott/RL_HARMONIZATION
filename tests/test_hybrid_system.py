@@ -23,7 +23,7 @@ import signal
 import atexit
 
 # Add src to path
-sys.path.append('src')
+sys.path.append('../src')
 
 from harmonization.core.rl_environment import HarmonizationEnvironment
 from harmonization.rewards.music_theory_rewards import MusicTheoryRewards

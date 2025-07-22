@@ -18,7 +18,7 @@ else:
     print("❌ src directory not found")
 
 # Add src to path
-sys.path.append('src')
+sys.path.append('../src')
 print(f"Python path: {sys.path}")
 
 # Try importing numpy
