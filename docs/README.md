@@ -2,9 +2,7 @@
 
 A hybrid harmonization system that combines **Coconet neural network harmonization** with **Reinforcement Learning (RL) contrary motion optimization** to create high-quality 4-part harmonies.
 
-## 🎵 **Quick Start**
-
-### **System Overview**
+## 🎵 **System Overview**
 
 This project implements a sophisticated music harmonization system that uses:
 
@@ -13,13 +11,29 @@ This project implements a sophisticated music harmonization system that uses:
 - **FastAPI Server**: RESTful API for harmonization requests
 - **Docker Container**: Containerized deployment
 
+## 🏗️ **Architecture**
+
 ### **Pipeline Flow:**
 
 ```
 Input Melody → Coconet Neural Harmonization → RL Contrary Motion Optimization → 4-Part Output
 ```
 
-## 🚀 **Quick Deployment**
+### **Core Components:**
+
+1. **Coconet Neural Network**: Generates initial harmonizations
+2. **RL Contrary Motion Model**: Optimizes for contrary motion and music theory compliance
+3. **FastAPI Server**: Provides REST API endpoints
+4. **Docker Container**: Ensures consistent deployment
+
+## 🚀 **Quick Start**
+
+### **Prerequisites**
+
+- Python 3.8+
+- Docker
+- TensorFlow 2.10.0
+- Note-seq 0.0.3
 
 ### **Docker Deployment**
 
@@ -33,42 +47,17 @@ docker run -d -p 8000:8000 --name hybrid-harmonization-server hybrid-harmonizati
 
 ### **API Usage**
 
-```bash
-# Status check
-curl http://localhost:8000/status
+#### **Status Check**
 
-# Harmonization
+```bash
+curl http://localhost:8000/status
+```
+
+#### **Harmonization**
+
+```bash
 curl -X POST "http://localhost:8000/harmonize?method=hybrid&temperature=0.8" \
      -F "file=@your_melody.mid"
-```
-
-## 📚 **Documentation**
-
-📖 **Complete documentation is available in the [`docs/`](docs/) folder:**
-
-- **[📋 Documentation Index](docs/INDEX.md)** - Organized overview of all documentation
-- **[🎯 System Summary](docs/HYBRID_SYSTEM_SUMMARY.md)** - Complete hybrid system overview
-- **[🚀 Implementation Guide](docs/IMPLEMENTATION_GUIDE.md)** - Step-by-step setup instructions
-- **[📊 Results & Analysis](docs/HYBRID_SYSTEM_TEST_RESULTS.md)** - System performance results
-
-### **Quick Navigation**
-
-- **New Users**: Start with [docs/README.md](docs/README.md)
-- **Developers**: Check [docs/REPOSITORY_ORGANIZATION.md](docs/REPOSITORY_ORGANIZATION.md)
-- **Researchers**: Review [docs/RL_VS_COCONET_TRAINING_ANALYSIS.md](docs/RL_VS_COCONET_TRAINING_ANALYSIS.md)
-
-## 🏗️ **Project Structure**
-
-```
-RL_HARMONIZATION/
-├── docs/                    # 📚 Complete documentation
-├── tests/                   # 🧪 Test suite
-├── analysis/                # 📊 Analysis tools
-├── midi_files/             # 🎵 Generated MIDI files
-├── coconet-server/         # 🐳 Server implementation
-├── src/harmonization/      # 🤖 Core harmonization modules
-├── examples/               # 📝 Usage examples
-└── magenta-rl-tuner/       # 🎼 Magenta library integration
 ```
 
 ## 🎼 **Harmonization Methods**
@@ -109,14 +98,18 @@ RL_HARMONIZATION/
 - **Best Reward**: 19.4
 - **Focus**: Contrary motion, music theory compliance, voice leading
 
-## 🎯 **Key Features**
+## 📁 **Project Structure**
 
-- ✅ **Hybrid Approach**: Neural network creativity + RL optimization
-- ✅ **Multiple Methods**: RL-only, Coconet-only, and hybrid approaches
-- ✅ **Production Ready**: Containerized, API-driven system
-- ✅ **Melody Preservation**: RL model guarantees melody preservation
-- ✅ **Music Theory Compliance**: Optimized for contrary motion and voice leading
-- ✅ **Scalable Architecture**: FastAPI server with Docker deployment
+```
+RL_HARMONIZATION/
+├── coconet-server/          # FastAPI server and Docker files
+├── magenta-rl-tuner/        # Magenta library integration
+├── src/harmonization/       # Core harmonization modules
+├── examples/                # Usage examples and demos
+├── multiple_harmonizations/ # Generated harmonization outputs
+├── saved_models/           # Model checkpoints and saved states
+└── docs/                   # Documentation
+```
 
 ## 🔧 **Technical Implementation**
 
@@ -141,6 +134,21 @@ RL_HARMONIZATION/
 - Checkpoint loading from `/app/coconet-64layers-128filters`
 - MIDI output parsing and processing
 
+## 🎯 **Key Features**
+
+- ✅ **Hybrid Approach**: Neural network creativity + RL optimization
+- ✅ **Multiple Methods**: RL-only, Coconet-only, and hybrid approaches
+- ✅ **Production Ready**: Containerized, API-driven system
+- ✅ **Melody Preservation**: RL model guarantees melody preservation
+- ✅ **Music Theory Compliance**: Optimized for contrary motion and voice leading
+- ✅ **Scalable Architecture**: FastAPI server with Docker deployment
+
+## 📚 **Documentation**
+
+- [System Summary](HYBRID_SYSTEM_SUMMARY.md) - Detailed technical overview
+- [Example Usage](examples/) - Code examples and demonstrations
+- [API Documentation](docs/) - API endpoints and usage
+
 ## 🎵 **Future Enhancements**
 
 1. **Real-time Processing**: WebSocket support for streaming
@@ -160,7 +168,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Status**: ✅ **FULLY OPERATIONAL**  
-**Last Updated**: July 23, 2024  
+**Last Updated**: July 22, 2024  
 **Version**: 1.0 (Production Ready)
-
-📖 **For complete documentation, visit the [`docs/`](docs/) folder!**
