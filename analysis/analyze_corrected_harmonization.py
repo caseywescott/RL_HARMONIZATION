@@ -10,7 +10,7 @@ def analyze_corrected_harmonization():
 
     try:
         # Load original melody
-        original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+        original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
         original_notes = []
 
         if original_midi.instruments:
@@ -29,8 +29,8 @@ def analyze_corrected_harmonization():
 
         # Analyze corrected harmonizations
         harmonization_files = [
-            "realms_corrected_harmonization.mid",
-            "realms_corrected_harmonization_v2.mid"
+            "../midi_files/realms_corrected_harmonization.mid",
+            "../midi_files/realms_corrected_harmonization_v2.mid"
         ]
         
         for harmonization_file in harmonization_files:

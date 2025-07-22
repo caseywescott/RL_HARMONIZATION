@@ -10,7 +10,7 @@ def analyze_melody_content():
     
     try:
         # Load original melody
-        original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+        original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
         original_notes = []
         
         if original_midi.instruments:
@@ -29,12 +29,12 @@ def analyze_melody_content():
         
         # Analyze harmonizations
         harmonization_files = [
-            "realms_fixed_harmonization_v1.mid",
-            "realms_fixed_harmonization_v2.mid", 
-            "realms_fixed_harmonization_v3.mid",
-            "melody_preserved_harmonization.mid",
-            "melody_preserved_v2.mid",
-            "melody_preserved_v3.mid"
+            "../midi_files/realms_fixed_harmonization_v1.mid",
+            "../midi_files/realms_fixed_harmonization_v2.mid", 
+            "../midi_files/realms_fixed_harmonization_v3.mid",
+            "../midi_files/melody_preserved_harmonization.mid",
+            "../midi_files/melody_preserved_v2.mid",
+            "../midi_files/melody_preserved_v3.mid"
         ]
         
         for filepath in harmonization_files:

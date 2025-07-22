@@ -10,8 +10,8 @@ def analyze_melody_preserved_harmonization():
     
     try:
         # Load the melody-preserved harmonization
-        harmonized_midi = pretty_midi.PrettyMIDI("melody_preserved_harmonization.mid")
-        original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+        harmonized_midi = pretty_midi.PrettyMIDI("../midi_files/../midi_files/melody_preserved_harmonization.mid")
+        original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
         
         print(f"✅ Loaded melody-preserved harmonization")
         print(f"📊 Duration: {harmonized_midi.get_end_time():.2f} seconds")

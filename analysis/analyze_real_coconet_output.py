@@ -39,10 +39,10 @@ def compare_harmonizations():
     """Compare the input melody with the Coconet harmonization"""
     
     # Analyze input melody
-    input_midi = analyze_midi_file("realms2_idea.midi", "Input Melody")
+    input_midi = analyze_midi_file("../midi_files/realms2_idea.midi", "Input Melody")
     
     # Analyze Coconet harmonization
-    coconet_midi = analyze_midi_file("final_real_coconet_harmonization.mid", "Coconet Harmonization")
+    coconet_midi = analyze_midi_file("../midi_files/final_real_coconet_harmonization.mid", "Coconet Harmonization")
     
     if input_midi and coconet_midi:
         print("\n=== COMPARISON ===")

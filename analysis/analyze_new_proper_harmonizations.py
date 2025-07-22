@@ -3,14 +3,14 @@
 import pretty_midi
 import numpy as np
 
-def analyze_hybrid_harmonization():
-    """Analyze the hybrid harmonization output"""
-    print("🎼 HYBRID HARMONIZATION ANALYSIS")
-    print("=" * 60)
+def analyze_new_proper_harmonizations():
+    """Analyze the new proper harmonizations with different temperatures"""
+    print("🎼 NEW PROPER MELODY PRESERVING HARMONIZATIONS ANALYSIS")
+    print("=" * 70)
 
     try:
         # Load original melody
-        original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+        original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
         original_notes = []
 
         if original_midi.instruments:
@@ -28,16 +28,19 @@ def analyze_hybrid_harmonization():
         print(f"   Duration: {original_midi.get_end_time():.2f} seconds")
         print(f"   Velocities: {[note['velocity'] for note in original_notes]}")
 
-        # Analyze RL harmonization
+        # Analyze new harmonizations
         harmonization_files = [
-            ("realms_hybrid_rl_harmonization_fixed.mid", "RL Only"),
-            ("realms_hybrid_harmonization_fixed.mid", "Hybrid (RL Primary)")
+            ("../midi_files/realms_proper_harmonization_v2.mid", 0.8),
+            ("../midi_files/realms_proper_harmonization_v3.mid", 1.2),
+            ("../midi_files/realms_proper_harmonization_v4.mid", 0.6),
+            ("../midi_files/realms_proper_harmonization_v5.mid", 0.4),
+            ("../midi_files/realms_proper_harmonization_v6.mid", 1.5)
         ]
 
-        for filepath, method in harmonization_files:
+        for filepath, temperature in harmonization_files:
             try:
-                print(f"\n🎵 ANALYZING: {filepath} ({method})")
-                print("-" * 50)
+                print(f"\n🎵 ANALYZING: {filepath} (Temperature: {temperature})")
+                print("-" * 60)
 
                 harmonized_midi = pretty_midi.PrettyMIDI(filepath)
 
@@ -75,31 +78,6 @@ def analyze_hybrid_harmonization():
                             matches = sum(1 for o, h in zip(original_pitches, instrument_pitches) if o == h)
                             match_percentage = (matches / len(original_pitches)) * 100
                             print(f"      ❌ Partial match: {matches}/{len(original_pitches)} ({match_percentage:.1f}%)")
-                            print(f"      Original: {original_pitches}")
-                            print(f"      Found:    {instrument_pitches}")
-
-                # Check voice ranges and harmony quality
-                if len(harmonized_midi.instruments) >= 4:
-                    print(f"   🎵 4-Part Harmony Analysis:")
-                    
-                    # Check voice ranges
-                    voice_ranges = []
-                    for i, instrument in enumerate(harmonized_midi.instruments):
-                        if instrument.notes:
-                            pitches = [note.pitch for note in instrument.notes]
-                            voice_ranges.append((min(pitches), max(pitches)))
-                            print(f"      Voice {i} range: {min(pitches)}-{max(pitches)}")
-                    
-                    # Check for proper voice spacing
-                    if len(voice_ranges) >= 2:
-                        for i in range(len(voice_ranges) - 1):
-                            upper_max = voice_ranges[i][1]
-                            lower_min = voice_ranges[i + 1][0]
-                            spacing = upper_max - lower_min
-                            if spacing >= 0:
-                                print(f"      ✅ Good spacing between voices {i} and {i+1}")
-                            else:
-                                print(f"      ⚠️  Voice crossing between voices {i} and {i+1}")
 
                 # Check melody audibility (first instrument should be loudest)
                 if len(harmonized_midi.instruments) >= 2:
@@ -118,12 +96,9 @@ def analyze_hybrid_harmonization():
                 print(f"   ❌ Error analyzing {filepath}: {e}")
 
         print(f"\n📋 SUMMARY:")
-        print("=" * 60)
-        print(f"✅ Hybrid harmonization server is working!")
-        print(f"✅ RL model loaded successfully (168,285 states)")
-        print(f"✅ Generated proper 4-part harmonizations")
-        print(f"✅ Original melody is preserved in soprano voice")
-        print(f"✅ Coconet available as fallback option")
+        print("=" * 70)
+        print(f"Generated 5 new harmonizations with temperatures: 0.4, 0.6, 0.8, 1.2, 1.5")
+        print(f"Check each file to see which produces the best musical result.")
 
     except Exception as e:
         print(f"❌ Error in analysis: {e}")
@@ -131,4 +106,4 @@ def analyze_hybrid_harmonization():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    analyze_hybrid_harmonization() 
+    analyze_new_proper_harmonizations() 

@@ -61,10 +61,10 @@ def compare_harmonizations():
     
     # Files to compare
     files = [
-        ("realms2_idea.midi", "Original Melody"),
-        ("coconet_harmonized_realms2.mid", "Working Coconet Harmonization"),
-        ("final_proper_harmonization.mid", "Final Proper Coconet Output"),
-        ("test_docker_coconet.mid", "Broken Docker Output")
+        ("../midi_files/realms2_idea.midi", "Original Melody"),
+        ("../midi_files/coconet_harmonized_realms2.mid", "Working Coconet Harmonization"),
+        ("../midi_files/final_proper_harmonization.mid", "Final Proper Coconet Output"),
+        ("../midi_files/test_docker_coconet.mid", "Broken Docker Output")
     ]
     
     results = {}

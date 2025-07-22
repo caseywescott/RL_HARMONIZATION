@@ -3,22 +3,26 @@
 import pretty_midi
 import numpy as np
 
-def analyze_enhanced_melody_preservation():
-    """Analyze the enhanced melody-preserved harmonizations"""
-    print("🎼 ENHANCED MELODY-PRESERVED HARMONIZATION ANALYSIS")
-    print("=" * 70)
+def analyze_enhanced_harmonizations():
+    """Analyze the enhanced harmonizations with improved melody audibility"""
+    print("🎼 ENHANCED MELODY AUDIBILITY ANALYSIS")
+    print("=" * 60)
     
     files_to_analyze = [
-        ("realms2_idea.midi", "ORIGINAL MELODY"),
-        ("enhanced_melody_preserved_v1.mid", "ENHANCED V1 (temp=0.7, strength=2.5, reduction=0.5)"),
-        ("enhanced_melody_preserved_v2.mid", "ENHANCED V2 (temp=0.5, strength=3.0, reduction=0.4)")
+        ("../midi_files/realms2_idea.midi", "ORIGINAL MELODY"),
+        ("../midi_files/realms_fixed_harmonization_v1.mid", "ORIGINAL COCONET V1"),
+        ("../midi_files/melody_enhanced_v1.mid", "ENHANCED V1 (2.5x melody, 0.5x harmony)"),
+        ("../midi_files/realms_fixed_harmonization_v2.mid", "ORIGINAL COCONET V2"),
+        ("../midi_files/melody_enhanced_v2.mid", "ENHANCED V2 (3.0x melody, 0.4x harmony)"),
+        ("../midi_files/realms_fixed_harmonization_v3.mid", "ORIGINAL COCONET V3"),
+        ("../midi_files/melody_enhanced_v3.mid", "ENHANCED V3 (2.0x melody, 0.6x harmony)")
     ]
     
     results = []
     
     for filepath, description in files_to_analyze:
         print(f"\n🎵 {description}")
-        print("-" * 60)
+        print("-" * 50)
         
         try:
             midi = pretty_midi.PrettyMIDI(filepath)
@@ -60,79 +64,83 @@ def analyze_enhanced_melody_preservation():
                 else:
                     print(f"   ❌ POOR: Melody may be drowned out")
                 
-                results.append((description, velocity_ratio, filepath))
+                results.append((description, velocity_ratio, filepath, total_notes))
             else:
                 print(f"   ⚠️  Only one instrument found")
-                results.append((description, 1.0, filepath))
+                results.append((description, 1.0, filepath, total_notes))
                 
         except Exception as e:
             print(f"   ❌ Error analyzing {filepath}: {e}")
-            results.append((description, 0.0, filepath))
+            results.append((description, 0.0, filepath, 0))
     
     # Summary
-    print(f"\n📊 ENHANCED MELODY PRESERVATION SUMMARY")
-    print("=" * 70)
+    print(f"\n📊 ENHANCED MELODY AUDIBILITY SUMMARY")
+    print("=" * 60)
     
     # Sort by velocity ratio (best first)
     results.sort(key=lambda x: x[1], reverse=True)
     
-    for i, (description, ratio, filepath) in enumerate(results):
+    for i, (description, ratio, filepath, notes) in enumerate(results):
         rank = "🥇" if i == 0 else "🥈" if i == 1 else "🥉" if i == 2 else "  "
         print(f"{rank} {description}")
         print(f"   Velocity ratio: {ratio:.2f}x")
+        print(f"   Total notes: {notes}")
         print(f"   File: {filepath}")
+    
+    # Compare original vs enhanced
+    print(f"\n🔄 BEFORE vs AFTER COMPARISON:")
+    print("-" * 40)
+    
+    original_v1 = next((r for r in results if "ORIGINAL COCONET V1" in r[0]), None)
+    enhanced_v1 = next((r for r in results if "ENHANCED V1" in r[0]), None)
+    
+    if original_v1 and enhanced_v1:
+        improvement = (enhanced_v1[1] / original_v1[1] - 1) * 100
+        print(f"V1 Improvement: {improvement:.1f}% ({original_v1[1]:.2f}x → {enhanced_v1[1]:.2f}x)")
+    
+    original_v2 = next((r for r in results if "ORIGINAL COCONET V2" in r[0]), None)
+    enhanced_v2 = next((r for r in results if "ENHANCED V2" in r[0]), None)
+    
+    if original_v2 and enhanced_v2:
+        improvement = (enhanced_v2[1] / original_v2[1] - 1) * 100
+        print(f"V2 Improvement: {improvement:.1f}% ({original_v2[1]:.2f}x → {enhanced_v2[1]:.2f}x)")
+    
+    original_v3 = next((r for r in results if "ORIGINAL COCONET V3" in r[0]), None)
+    enhanced_v3 = next((r for r in results if "ENHANCED V3" in r[0]), None)
+    
+    if original_v3 and enhanced_v3:
+        improvement = (enhanced_v3[1] / original_v3[1] - 1) * 100
+        print(f"V3 Improvement: {improvement:.1f}% ({original_v3[1]:.2f}x → {enhanced_v3[1]:.2f}x)")
     
     # Recommendations
     print(f"\n💡 RECOMMENDATIONS:")
     print("-" * 40)
     
-    best_result = results[0] if results else None
-    if best_result:
-        print(f"🎯 Best melody preservation: {best_result[0]}")
-        print(f"📁 File: {best_result[2]}")
-        
-        if best_result[1] > 2.0:
-            print(f"✅ This version should have VERY clearly audible melody!")
-            print(f"🎵 The melody should stand out significantly from the harmony")
-        elif best_result[1] > 1.5:
-            print(f"✅ This version should have clearly audible melody")
-            print(f"🎵 The melody should be noticeably louder than the harmony")
-        elif best_result[1] > 1.2:
-            print(f"✅ This version should have audible melody")
-            print(f"🎵 The melody should be somewhat louder than the harmony")
-        else:
-            print(f"⚠️  Even the best version may have melody audibility issues")
-    
-    # Parameter insights
-    print(f"\n🔧 ENHANCED PARAMETER INSIGHTS:")
-    print("-" * 40)
-    
     enhanced_results = [r for r in results if "ENHANCED" in r[0]]
     if enhanced_results:
-        print(f"Enhanced versions average velocity ratio: {np.mean([r[1] for r in enhanced_results]):.2f}x")
+        best_enhanced = max(enhanced_results, key=lambda x: x[1])
+        print(f"🎯 Best enhanced version: {best_enhanced[0]}")
+        print(f"📁 File: {best_enhanced[2]}")
+        print(f"📈 Velocity ratio: {best_enhanced[1]:.2f}x")
         
-        # Compare with original
-        original_ratio = next((r[1] for r in results if "ORIGINAL" in r[0]), 1.0)
-        enhanced_avg = np.mean([r[1] for r in enhanced_results])
-        
-        if enhanced_avg > original_ratio:
-            improvement = (enhanced_avg / original_ratio - 1) * 100
-            print(f"✅ Enhanced versions improve melody audibility by {improvement:.1f}%")
-        else:
-            print(f"⚠️  Enhanced versions don't show significant improvement")
+        if best_enhanced[1] > 2.0:
+            print(f"✅ This version should have VERY clearly audible melody!")
+            print(f"🎵 The melody should stand out significantly from the harmony")
+        elif best_enhanced[1] > 1.5:
+            print(f"✅ This version should have clearly audible melody")
+            print(f"🎵 The melody should be noticeably louder than the harmony")
     
-    print(f"\n🎼 HARMONIZATION QUALITY ASSESSMENT:")
+    print(f"\n🎼 HARMONIZATION QUALITY:")
     print("-" * 40)
     
     # Check if we have good harmonizations
     good_harmonizations = [r for r in results if r[1] > 1.5 and "ENHANCED" in r[0]]
     if good_harmonizations:
         print(f"✅ Found {len(good_harmonizations)} harmonizations with good melody audibility:")
-        for desc, ratio, filepath in good_harmonizations:
-            print(f"   - {desc}: {ratio:.2f}x velocity ratio")
+        for desc, ratio, filepath, notes in good_harmonizations:
+            print(f"   - {desc}: {ratio:.2f}x velocity ratio, {notes} notes")
     else:
         print(f"⚠️  No harmonizations achieved good melody audibility")
-        print(f"   Consider trying different parameters or post-processing")
 
 if __name__ == "__main__":
-    analyze_enhanced_melody_preservation() 
+    analyze_enhanced_harmonizations() 

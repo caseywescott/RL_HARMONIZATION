@@ -10,7 +10,7 @@ def analyze_full_harmonization():
     
     # Analyze the new harmonization
     try:
-        midi_data = pretty_midi.PrettyMIDI("realms_full_harmonization.mid")
+        midi_data = pretty_midi.PrettyMIDI("../midi_files/../midi_files/realms_full_harmonization.mid")
         print(f"✅ File loaded successfully")
         print(f"📊 Duration: {midi_data.get_end_time():.2f} seconds")
         print(f"🎵 Tempo: {midi_data.estimate_tempo():.1f} BPM")
@@ -55,7 +55,7 @@ def analyze_full_harmonization():
         # Compare with original melody
         print(f"\n🔄 COMPARISON WITH ORIGINAL:")
         try:
-            original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+            original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
             original_duration = original_midi.get_end_time()
             original_notes = sum(len(instrument.notes) for instrument in original_midi.instruments)
             

@@ -9,9 +9,9 @@ def analyze_fixed_harmonizations():
     print("=" * 60)
     
     files = [
-        "realms_fixed_harmonization_v1.mid",
-        "realms_fixed_harmonization_v2.mid", 
-        "realms_fixed_harmonization_v3.mid"
+        "../midi_files/realms_fixed_harmonization_v1.mid",
+        "../midi_files/realms_fixed_harmonization_v2.mid", 
+        "../midi_files/realms_fixed_harmonization_v3.mid"
     ]
     
     temperatures = [0.99, 0.7, 1.3]
@@ -44,7 +44,7 @@ def analyze_fixed_harmonizations():
     print(f"\n🔄 COMPARISON WITH ORIGINAL MELODY:")
     print("-" * 40)
     try:
-        original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+        original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
         original_duration = original_midi.get_end_time()
         original_notes = sum(len(instrument.notes) for instrument in original_midi.instruments)
         

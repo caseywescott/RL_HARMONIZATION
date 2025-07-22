@@ -10,7 +10,7 @@ def analyze_realms_harmonization():
     
     # Analyze the new harmonization
     try:
-        midi_data = pretty_midi.PrettyMIDI("realms_coconet_harmonization.mid")
+        midi_data = pretty_midi.PrettyMIDI("../midi_files/../midi_files/realms_coconet_harmonization.mid")
         print(f"✅ File loaded successfully")
         print(f"📊 Duration: {midi_data.get_end_time():.2f} seconds")
         print(f"🎵 Tempo: {midi_data.estimate_tempo():.1f} BPM")

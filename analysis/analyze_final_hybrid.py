@@ -10,7 +10,7 @@ def analyze_final_hybrid():
 
     try:
         # Load original melody
-        original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+        original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
         original_notes = []
 
         if original_midi.instruments:
@@ -28,10 +28,10 @@ def analyze_final_hybrid():
         print(f"   Duration: {original_midi.get_end_time():.2f} seconds")
 
         # Analyze final RL harmonization
-        print(f"\n🎵 ANALYZING: realms_hybrid_rl_final_v2.mid")
+        print(f"../midi_files/\n🎵 ANALYZING: realms_hybrid_rl_final_v2.mid")
         print("-" * 50)
 
-        harmonized_midi = pretty_midi.PrettyMIDI("realms_hybrid_rl_final_v2.mid")
+        harmonized_midi = pretty_midi.PrettyMIDI("../midi_files/../midi_files/realms_hybrid_rl_final_v2.mid")
 
         if not harmonized_midi.instruments:
             print(f"   ❌ No instruments found")

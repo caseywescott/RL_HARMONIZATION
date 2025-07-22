@@ -9,8 +9,8 @@ def analyze_new_harmonizations():
     print("=" * 60)
 
     files = [
-        "melody_copy_harmonization_fixed.mid",
-        "fixed_masking_harmonization_fixed.mid"
+        "../midi_files/melody_copy_harmonization_fixed.mid",
+        "../midi_files/fixed_masking_harmonization_fixed.mid"
     ]
 
     solution_names = [

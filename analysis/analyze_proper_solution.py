@@ -10,7 +10,7 @@ def analyze_proper_solution():
 
     try:
         # Load original melody
-        original_midi = pretty_midi.PrettyMIDI("realms2_idea.midi")
+        original_midi = pretty_midi.PrettyMIDI("../midi_files/realms2_idea.midi")
         original_notes = []
         
         if original_midi.instruments:
@@ -32,8 +32,8 @@ def analyze_proper_solution():
         print("-" * 50)
 
         try:
-            harmonized_midi = pretty_midi.PrettyMIDI("proper_melody_preserving_harmonization_success.mid")
-            print(f"✅ File: proper_melody_preserving_harmonization_success.mid")
+            harmonized_midi = pretty_midi.PrettyMIDI("../midi_files/../midi_files/proper_melody_preserving_harmonization_success.mid")
+            print(f"../midi_files/✅ File: proper_melody_preserving_harmonization_success.mid")
             print(f"📊 Duration: {harmonized_midi.get_end_time():.2f} seconds")
             print(f"📊 Tempo: {harmonized_midi.estimate_tempo():.1f} BPM")
 
